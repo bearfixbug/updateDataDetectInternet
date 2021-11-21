@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+
+    <button onclick="changeData()">Change</button>
+    <button onclick="updateData()">updateData</button>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script>
+        var data
+        var detect = true;
+        $(document).ready(() => {
+            setInterval(() => {
+                if(detectInternet() == false && detect == true) {
+                    detect = false;
+                }
+                else if(detectInternet() == true && detect == false) {
+                    detect = true;
+                    $.ajax({
+                        type: "post",
+                        url: "./updateData.php",
+                        data: {
+                            dataInfo: JSON.stringify(data),
+                            dataLength: data.length
+                        }, success: function(response) {
+                            console.log("updated", response)
+                        }, error: function(err) {
+                            console.log("bad", err)
+                        }
+                    })
+                }
+
+                
+            }, 2000)
+
+            $.ajax({
+                type: "post",
+                url: "./getData.php",
+                success: function(response) {
+                    data = JSON.parse(response)
+                    data = data.result;
+                    console.log("good", data)
+                }, error: function(err) {
+                    console.log("bad", err)
+                }
+            })
+        })
+
+        function updateData() {
+            $.ajax({
+                type: "post",
+                url: "./updateData.php",
+                data: {
+                    dataInfo: JSON.stringify(data),
+                    dataLength: data.length
+                }, success: function(response) {
+                    console.log("updated", response)
+                }, error: function(err) {
+                    console.log("bad", err)
+                }
+            })
+        }
+
+        function changeData() {
+            data[0].productQyt = parseInt(data[0].productQyt) + 10;
+            data[0].updated_at = "2021-12-03";
+
+            data[1].productQyt = parseInt(data[1].productQyt) + 18;
+            data[1].updated_at = "2025-12-03";
+            console.log(data)
+        }
+
+        function detectInternet() {
+            console.log('Initially ' + (window.navigator.onLine ? 'on' : 'off') + 'line');
+            window.addEventListener('online', () => console.log('Became online'));
+            window.addEventListener('offline', () => console.log('Became offline'));
+            console.log('window.navigator.onLine is ' + window.navigator.onLine);
+
+            return window.navigator.onLine;
+        }
+    </script>
+</body>
+</html>
