@@ -1,4 +1,4 @@
-# update data detect internet
+# Update data detect internet
 Update data to database when detect internet online from offline
 
 # How to use
